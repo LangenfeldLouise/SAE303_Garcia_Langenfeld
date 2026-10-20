@@ -1,21 +1,83 @@
 ---
-import PlotFigure from "../components/PlotFigure.astro";
 import Layout from "../layouts/Layout.astro";
+import backgroundImage from "../assets/miroir-d-eau-place-de-la-bourse-1.png";
 import * as Plot from "@observablehq/plot";
-import penguins from "../assets/penguins.json";
+import Incendies from "../assets/Incendies.json";
+import PlotFigure from "../components/PlotFigure.astro";
+
+const causes = new Map<string, number>();
+for (const incendie of Incendies) {
+  const nature = incendie["Nature"];
+  if (nature) causes.set(nature, (causes.get(nature) ?? 0) + 1);
+}
+const causes_incendies_N = Array.from(causes, ([nature, count]) => ({
+  nature,
+  count,
+}));
 ---
 
 <Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
+  <div class="hero relative min-h-screen overflow-hidden">
+    <img
+      src={backgroundImage.src}
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover"
+      aria-hidden="true"
+    />
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
+    <div
+      class="hero-content relative z-10 text-neutral-content text-center lg:mr-150 lg:ml-20"
+    >
+      <div class="max-w-max lg:text-left">
+        <h1 class="mb-5 text-5xl lg:text-7xl font-bold">
+          Les risques d'incendies à Bordeaux Métropole
+        </h1>
+        <p class="mb-5 font-light lg:text-2xl">
+          Quels sont les facteurs déclencheurs des incendies autour de Bordeaux,
+          comment mesurer l'ampleur de leurs impacts, et sur quels leviers
+          pouvons-nous agir pour prévenir les risques futurs ?
+        </p>
+        <button class="btn btn-primary btn-xl">Commencer</button>
+      </div>
+    </div>
+  </div>
+  <p class="text-justify text-lg lg:text-xl lg:mt-20 my-10">
+    Ces dernières années, les catastrophes liées au dérèglement climatique se
+    multiplient à travers le monde. La Gironde et la métropole de Bordeaux n'y
+    échappent pas, gravement marquées par des incendies ravageurs et des crues
+    répétées de la Garonne.
+  </p>
+  <p class="text-justify text-lg lg:text-xl">
+    Face aux dégâts subis et aux bouleversements entraînés dans le quotidien des
+    habitants, une question se pose : quels sont les facteurs déclencheurs des
+    incendies autour de Bordeaux, comment mesurer l'ampleur de leurs impacts, et
+    sur quels leviers pouvons-nous agir pour prévenir les risques futurs ?
+  </p>
+
   <PlotFigure
     options={{
+      marginLeft: 120,
+      x: { label: "Nombre d'incendies" },
+      y: { label: null },
       marks: [
-        Plot.dot(penguins, {
-          x: "culmen_length_mm",
-          y: "culmen_depth_mm",
-          stroke: "species",
+        Plot.barX(causes_incendies_N, {
+          x: "count",
+          y: "nature",
+          fill: "#f87171",
+          sort: { y: "-x" },
         }),
+        Plot.text(causes_incendies_N, {
+          x: "count",
+          y: "nature",
+          text: (d) => d.count,
+          dx: 15,
+        }),
+        Plot.ruleX([0]),
       ],
     }}
   />
+  <text class="text-sm text-gray-500">
+    Ce graphique n'affiche que 215 origines sur 484. Les 269 autres origines ne
+    sont pas spécifiées.</text
+  >
 </Layout>
