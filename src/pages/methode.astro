@@ -1,0 +1,153 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const fichiersTelechargeables = (
+    Object.entries(
+        import.meta.glob("../assets/*.json", {
+            eager: true,
+            import: "default",
+            query: "?url",
+        }),
+    ) as [string, string][]
+)
+    .map(([chemin, url]) => ({
+        nom: chemin.split("/").pop() ?? chemin,
+        url,
+    }))
+    .sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+---
+
+<Layout>
+    <main>
+        <h1 class="text-7xl font-bold mb-10">Méthode</h1>
+        <h2 class="text-2xl font-semibold mb-5">
+            Sources des données et métadonnées
+        </h2>
+        <h3 class="text-xl font-semibold">Sources</h3>
+        <ul class="list-disc list-inside">
+            <li>
+                <a
+                    >BDIFF : Ministère de l'Agriculture et de la Souveraineté
+                    alimentaire (Base de Données sur les Incendies de Forêts en
+                    France).
+                </a>
+            </li>
+            <li>
+                <a
+                    >CASIAS : BRGM / Bordeaux Métropole (Inventaire des anciens
+                    sites industriels et activités de service).</a
+                >
+            </li>
+            <li>
+                <a
+                    >GeoJSON : Bordeaux Métropole (Contours administratifs des
+                    28 communes).</a
+                >
+            </li>
+        </ul>
+        <h3 class="text-xl font-semibold mt-3">Dates des données</h3>
+        <ul class="list-disc list-inside">
+            <li>Donnée de l’année 2010 à 2025 pour la BDIFF.</li>
+            <li>Donnée extraites en octobre 2026.</li>
+        </ul>
+        <h3 class="text-xl font-semibold mt-3">Licences d'utilisation</h3>
+        <ul class="list-disc list-inside">
+            <li>Licence Ouverte</li>
+        </ul>
+        <h3 class="text-xl font-semibold mt-3">Liens directs</h3>
+        <ul class="list-disc list-inside">
+            <li>
+                <a
+                    href="https://bdiff.agriculture.gouv.fr/incendies?if%5BidIncendie%5D=&if%5BdateAlerteDeb%5D%5Bdate%5D=01%2F01%2F2025&if%5BdateAlerteDeb%5D%5Btime%5D%5Bhour%5D=0&if%5BdateAlerteDeb%5D%5Btime%5D%5Bminute%5D=0&if%5BdateAlerteFin%5D%5Bdate%5D=31%2F12%2F2025&if%5BdateAlerteFin%5D%5Btime%5D%5Bhour%5D=23&if%5BdateAlerteFin%5D%5Btime%5D%5Bminute%5D=59&if%5BperiodeDeb%5D%5Bjour%5D=&if%5BperiodeDeb%5D%5Bmois%5D=&if%5BperiodeFin%5D%5Bjour%5D=&if%5BperiodeFin%5D%5Bmois%5D=&if%5BperiodeAnnees%5D%5BanneeDeb%5D=&if%5BperiodeAnnees%5D%5BanneeFin%5D=&if%5BheureDeb%5D=&if%5BheureFin%5D=&if%5BsurfaceDeInc%5D=1&if%5BsurfaceDe%5D=&if%5BsurfaceA%5D=&if%5BsurfaceAInc%5D=1&if%5Bzone%5D=&if%5Bra%5D=75&if%5Bdeprts%5D%5Bvalue%5D=&if%5Bcommune%5D=&if%5Bbbox%5D%5Bvalue%5D=&if%5Bsubmit%5D=#tab"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary underline">BDIFF</a
+                >
+            </li>
+            <li>
+                <a
+                    href="https://hydra.s3.rbx.io.cloud.ovh.net/geojson/4ecd85c7-2bd7-42f8-a096-310c2fb5ce69.geojson "
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary underline">GeoJSON</a
+                >
+            </li>
+            <li>
+                <a
+                    href="https://datahub.bordeaux-metropole.fr/explore/dataset/ri_casias_p/information/?disjunctive.insee&disjunctive.methode_geoloc"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary underline">Datahub Bordeaux Métropole</a
+                >
+            </li>
+        </ul>
+        <h2 class="text-2xl font-semibold my-5">Traitements appliqués</h2>
+        <ul class="list-disc list-inside">
+            <li>
+                <strong>Périmètre et filtres :</strong> Conservation stricte des 28
+                communes de Bordeaux Métropole et l'élimination des données hors périmètre.
+            </li>
+            <li>
+                <strong>Gestion des données manquantes :</strong> Création de la catégorie
+                "Non renseignée" pour les 269 feux sans cause identifiée.
+            </li>
+            <li>
+                <strong>Optimisation pour le site :</strong> Les fichiers ont été
+                pré-filtrés pour garantir la fluidité du site Web.
+            </li>
+        </ul>
+        <h2 class="text-2xl font-semibold my-5">Limites et biais identifiés</h2>
+        <ul class="list-disc list-inside">
+            <li>
+                <strong>Biais de déclaration (BDIFF) :</strong> Part importante d'incendies
+                à cause non renseignée (269/484), ce qui limite la certitude absolue
+                sur la totalité des origines.
+            </li>
+            <li>
+                <strong>Biais historique (CASIAS) :</strong> L'inventaire recense
+                les anciens sites industriels connus, mais il ne constitue pas une
+                mesure directe du niveau de pollution ou de dangerosité en temps réel.
+            </li>
+            <li>
+                <strong>Échelle d'analyse :</strong> Travailler à l’échelle des communes
+                nous permet d'identifier les zones à risque de manière plus précise
+                et visuelle qu’une échelle plus large comme la France. Ce découpage
+                nous permet également d’estimer des facteurs qui ont aggravé les feux,
+                comme la présence de forêt, de rivière, etc.
+            </li>
+        </ul>
+        <h2 class="text-2xl font-semibold my-5">
+            Vérification et téléchargeabilité
+        </h2>
+        <ul class="list-disc list-inside">
+            <li>
+                Lien vers le Notebook Observable : <a
+                    href="https://observablehq.com/@mmi-montbeliard/sae-303-gr-12"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary underline"
+                >
+                    https://observablehq.com/@mmi-montbeliard/sae-303-gr-12
+                </a>
+            </li>
+            <li>
+                <span>Données téléchargeables :</span>
+                <ul class="mt-2 list-inside list-disc pl-4">
+                    {
+                        fichiersTelechargeables.map((fichier) => (
+                            <li>
+                                <a
+                                    href={fichier.url}
+                                    download={fichier.nom}
+                                    class="text-primary underline"
+                                >
+                                    {fichier.nom}
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </li>
+        </ul>
+    </main>
+</Layout>
