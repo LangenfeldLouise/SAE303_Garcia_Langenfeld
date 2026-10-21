@@ -69,13 +69,13 @@ const sourceIncendies =
       </div>
     </div>
   </div>
-  <p class="text-justify text-lg lg:text-xl lg:mt-20 my-10" id="introduction">
+  <p class="text-justify lg:mt-20 my-10" id="introduction">
     Ces dernières années, les catastrophes liées au dérèglement climatique se
     multiplient à travers le monde. La Gironde et la métropole de Bordeaux n'y
     échappent pas, gravement marquées par des incendies ravageurs et des crues
     répétées de la Garonne.
   </p>
-  <p class="text-justify text-lg lg:text-xl">
+  <p class="text-justify">
     Face aux dégâts subis et aux bouleversements entraînés dans le quotidien des
     habitants, une question se pose : quels sont les facteurs déclencheurs des
     incendies autour de Bordeaux, comment mesurer l'ampleur de leurs impacts, et
@@ -86,12 +86,12 @@ const sourceIncendies =
     Quelles sont les causes des incendies ?
   </h2>
 
-  <p class="text-justify text-lg lg:text-xl mb-10">
+  <p class="text-justify mb-10">
     Tout d'abord, il est important de comprendre les différentes causes directes
     des incendies. Ces causes peuvent être naturelles, comme la foudre, ou
     humaines, comme les actes de vandalisme ou les erreurs humaines.
   </p>
-  <p class="text-justify text-lg lg:text-xl mb-10">
+  <p class="text-justify mb-10">
     Comme on peut le voir ci-dessous, une grande partie des incendies est due à
     des causes humaines. Même si nous ne pouvons pas agir sur les causes
     naturelles, il est possible de réduire le nombre d'incendies en redoublant
@@ -116,11 +116,14 @@ const sourceIncendies =
         marginLeft: 120,
         x: { label: "Nombre d'incendies" },
         y: { label: null },
+        ariaLabel:
+          "Graphique en barres montrant la répartition des incendies selon leur origine.",
         marks: [
           Plot.barX(causes_incendies_N, {
             x: "count",
             y: "nature",
-            fill: "#f87171",
+            opacity: 0.7,
+            fill: "crimson",
             sort: { y: "-x" },
           }),
           Plot.text(causes_incendies_N, {
@@ -160,7 +163,7 @@ const sourceIncendies =
     Quelles sont les circonstances aggravantes des incendies ?
   </h3>
 
-  <p class="text-justify text-lg lg:text-xl mb-10">
+  <p class="text-justify mb-10">
     En temps normal, les incendies sont souvent maîtrisés rapidement par les
     soldats du feu. Cependant, le problème qui se pose de plus en plus souvent
     est leur violence. Les incendies sont souvent aggravés par des conditions
@@ -169,10 +172,10 @@ const sourceIncendies =
     favoriser la propagation rapide du feu et rendre son extinction plus
     difficile.
   </p>
-  <p class="text-justify text-lg lg:text-xl mb-10">
-    Et c'est bien là le problème : en 15 ans, dans toute la France, il n'y a
-    pas forcément eu beaucoup plus d'incendies. En revanche, ils ont causé
-    beaucoup plus de dégâts, comme en témoignent les hectares brûlés.
+  <p class="text-justify mb-10">
+    Et c'est bien là le problème : en 15 ans, dans toute la France, il n'y a pas
+    forcément eu beaucoup plus d'incendies. En revanche, ils ont causé beaucoup
+    plus de dégâts, comme en témoignent les hectares brûlés.
   </p>
 
   <figure class="my-10 rounded-box bg-base-200 p-5 shadow-lg lg:p-8">

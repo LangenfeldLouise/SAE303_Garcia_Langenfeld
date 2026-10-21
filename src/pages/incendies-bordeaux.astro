@@ -72,7 +72,7 @@ const sourceDonnees =
                     >
                     {
                         listeNatures.map((n) => (
-                            <label class="nature inline-flex flex-none cursor-pointer items-center gap-2 rounded-full border border-base-300 bg-base-200 px-3 py-2 text-sm text-base-content/70 transition hover:-translate-y-px hover:border-secondary hover:bg-base-300 has-checked:border-secondary has-checked:bg-secondary/10 has-checked:font-bold has-checked:text-secondary has-checked:shadow-md">
+                            <label class="nature inline-flex flex-none cursor-pointer items-center gap-2 rounded-full border border-base-300 bg-base-200 px-3 py-2 text-sm text-base-content/70 transition hover:-translate-y-px hover:border-secondary hover:bg-base-300 has-[:checked]:border-secondary has-[:checked]:bg-secondary/10 has-[:checked]:font-bold has-[:checked]:text-secondary has-[:checked]:shadow-md">
                                 <input
                                     type="checkbox"
                                     name="nature"
@@ -104,7 +104,7 @@ const sourceDonnees =
                 </label>
             </div>
 
-            <div
+            <figure
                 class="visualization-panel incendies-panel min-w-0 overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-xl"
             >
                 <div
@@ -124,6 +124,13 @@ const sourceDonnees =
                     aria-live="polite"
                 >
                 </div>
+                <figcaption
+                    class="border-t border-base-300 bg-base-200 px-5 py-3 text-sm text-base-content/70"
+                >
+                    Carte interactive des incendies recensés dans les 28 communes
+                    de Bordeaux Métropole, filtrable par année et par origine du
+                    feu. La taille des points indique la surface parcourue.
+                </figcaption>
                 <p
                     class="border-t border-base-300 px-5 py-3 text-xs text-base-content/60"
                 >
@@ -137,7 +144,7 @@ const sourceDonnees =
                         BDIFF — Base de données des incendies
                     </a>
                 </p>
-            </div>
+            </figure>
         </div>
     </main>
 </Layout>

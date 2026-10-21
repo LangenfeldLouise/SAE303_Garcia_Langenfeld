@@ -9,6 +9,9 @@ const somme = (liste: { surface_ha: number }[]) =>
 
 const stats2010 = `${fr.format(incendies2010.length)} incendies · ${fr.format(somme(incendies2010))} ha parcourus`;
 const stats2025 = `${fr.format(incendies2025.length)} incendies · ${fr.format(somme(incendies2025))} ha parcourus`;
+
+const sourceDonnees =
+    "https://bdiff.agriculture.gouv.fr/incendies?if%5BidIncendie%5D=&if%5BdateAlerteDeb%5D%5Bdate%5D=01%2F01%2F2010&if%5BdateAlerteDeb%5D%5Btime%5D%5Bhour%5D=0&if%5BdateAlerteDeb%5D%5Btime%5D%5Bminute%5D=0&if%5BdateAlerteFin%5D%5Bdate%5D=31%2F12%2F2025&if%5BdateAlerteFin%5D%5Btime%5D%5Bhour%5D=23&if%5BdateAlerteFin%5D%5Btime%5D%5Bminute%5D=59&if%5BperiodeDeb%5D%5Bjour%5D=&if%5BperiodeDeb%5D%5Bmois%5D=&if%5BperiodeFin%5D%5Bjour%5D=&if%5BperiodeFin%5D%5Bmois%5D=&if%5BperiodeAnnees%5D%5BanneeDeb%5D=&if%5BperiodeAnnees%5D%5BanneeFin%5D=&if%5BheureDeb%5D=&if%5BheureFin%5D=&if%5BsurfaceDeInc%5D=1&if%5BsurfaceDe%5D=&if%5BsurfaceA%5D=&if%5BsurfaceAInc%5D=1&if%5Bzone%5D=&if%5Bra%5D=&if%5Bdeprts%5D%5Bvalue%5D=33&if%5Bcommune%5D=&if%5Bbbox%5D%5Bvalue%5D=&if%5Bsubmit%5D=";
 ---
 
 <Layout
@@ -82,8 +85,19 @@ const stats2025 = `${fr.format(incendies2025.length)} incendies · ${fr.format(s
                         <p class="sous-titre text-base text-base-content/75">
                             Où les incendies ont-ils eu lieu ?
                         </p>
-                        <div id="carte-2010" class="w-full overflow-x-auto">
-                        </div>
+                        <figure
+                            class="w-full flex flex-col items-center justify-center"
+                        >
+                            <div id="carte-2010" class="w-full overflow-x-auto">
+                            </div>
+                            <figcaption
+                                class="mt-2 text-sm text-base-content/60"
+                            >
+                                Carte des incendies recensés en France en 2010.
+                                Chaque point représente un incendie et sa taille
+                                indique la surface parcourue.
+                            </figcaption>
+                        </figure>
                         <details
                             class="collapse collapse-arrow mt-2 border border-base-300 bg-base-200"
                         >
@@ -133,8 +147,17 @@ const stats2025 = `${fr.format(incendies2025.length)} incendies · ${fr.format(s
                         <p class="sous-titre text-base text-base-content/75">
                             Où les incendies ont-ils eu lieu ?
                         </p>
-                        <div id="carte-2025" class="w-full overflow-x-auto">
-                        </div>
+                        <figure class="flex flex-col items-center">
+                            <div id="carte-2025" class="w-full overflow-x-auto">
+                            </div>
+                            <figcaption
+                                class="mt-2 text-sm text-base-content/60"
+                            >
+                                Carte des incendies recensés en France en 2025.
+                                Chaque point représente un incendie et sa taille
+                                indique la surface parcourue.
+                            </figcaption>
+                        </figure>
                         <details
                             class="collapse collapse-arrow mt-2 border border-base-300 bg-base-200"
                         >
@@ -172,6 +195,19 @@ const stats2025 = `${fr.format(incendies2025.length)} incendies · ${fr.format(s
                 une surface parcourue 2,6 fois plus grande en 2025, surtout à
                 cause d'un feu exceptionnel dans l'Aude. La couverture des
                 données peut différer entre les deux années.
+            </p>
+            <p
+                class="border-t border-base-300 px-5 py-3 text-xs text-base-content/60"
+            >
+                Source des données :
+                <a
+                    href={sourceDonnees}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link link-primary font-semibold"
+                >
+                    BDIFF — Base de données des incendies
+                </a>
             </p>
         </div>
     </main>
