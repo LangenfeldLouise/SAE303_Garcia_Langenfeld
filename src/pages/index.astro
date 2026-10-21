@@ -1,21 +1,362 @@
 ---
-import PlotFigure from "../components/PlotFigure.astro";
 import Layout from "../layouts/Layout.astro";
+import backgroundImage from "../assets/miroir-d-eau-place-de-la-bourse-1.png";
 import * as Plot from "@observablehq/plot";
-import penguins from "../assets/penguins.json";
+import Incendies from "../assets/Incendies.json";
+import PlotFigure from "../components/PlotFigure.astro";
+import incendies2010 from "../assets/Incendies-10-FR.json";
+import incendies2025 from "../assets/Incendies-25-FR.json";
+
+const causes = new Map<string, number>();
+for (const incendie of Incendies) {
+  const nature = incendie["Nature"];
+  if (nature) causes.set(nature, (causes.get(nature) ?? 0) + 1);
+}
+const causes_incendies_N = Array.from(causes, ([nature, count]) => ({
+  nature,
+  count,
+}));
+
+const entier = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+const decimal = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
+
+type Feu = { commune: string; surface_ha: number };
+const resume = (liste: Feu[]) => {
+  const total = liste.reduce((somme, d) => somme + d.surface_ha, 0);
+  const plusGrand = liste.reduce((a, b) =>
+    b.surface_ha > a.surface_ha ? b : a,
+  );
+  return {
+    nombre: liste.length,
+    total,
+    plusGrand,
+    part: (plusGrand.surface_ha / total) * 100,
+  };
+};
+
+const r2010 = resume(incendies2010);
+const r2025 = resume(incendies2025);
+const rapport = r2025.total / r2010.total;
+
+const sourceIncendies =
+  "https://bdiff.agriculture.gouv.fr/incendies?if%5BidIncendie%5D=&if%5BdateAlerteDeb%5D%5Bdate%5D=01%2F01%2F2010&if%5BdateAlerteDeb%5D%5Btime%5D%5Bhour%5D=0&if%5BdateAlerteDeb%5D%5Btime%5D%5Bminute%5D=0&if%5BdateAlerteFin%5D%5Bdate%5D=31%2F12%2F2025&if%5BdateAlerteFin%5D%5Btime%5D%5Bhour%5D=23&if%5BdateAlerteFin%5D%5Btime%5D%5Bminute%5D=59&if%5BperiodeDeb%5D%5Bjour%5D=&if%5BperiodeDeb%5D%5Bmois%5D=&if%5BperiodeFin%5D%5Bjour%5D=&if%5BperiodeFin%5D%5Bmois%5D=&if%5BperiodeAnnees%5D%5BanneeDeb%5D=&if%5BperiodeAnnees%5D%5BanneeFin%5D=&if%5BheureDeb%5D=&if%5BheureFin%5D=&if%5BsurfaceDeInc%5D=1&if%5BsurfaceDe%5D=&if%5BsurfaceA%5D=&if%5BsurfaceAInc%5D=1&if%5Bzone%5D=&if%5Bra%5D=&if%5Bdeprts%5D%5Bvalue%5D=33&if%5Bcommune%5D=&if%5Bbbox%5D%5Bvalue%5D=&if%5Bsubmit%5D=";
 ---
 
 <Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
-  <PlotFigure
-    options={{
-      marks: [
-        Plot.dot(penguins, {
-          x: "culmen_length_mm",
-          y: "culmen_depth_mm",
-          stroke: "species",
-        }),
-      ],
-    }}
-  />
+  <div class="hero relative min-h-screen overflow-hidden">
+    <img
+      src={backgroundImage.src}
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover"
+      aria-hidden="true"
+    />
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
+    <div
+      class="hero-content relative z-10 text-neutral-content text-center lg:mr-150 lg:ml-20"
+    >
+      <div class="max-w-max lg:text-left">
+        <h1 class="mb-5 text-5xl lg:text-7xl font-bold">
+          Les risques d'incendies à Bordeaux Métropole
+        </h1>
+        <p class="mb-5 font-light lg:text-2xl">
+          Quels sont les facteurs déclencheurs des incendies autour de Bordeaux,
+          comment mesurer l'ampleur de leurs impacts, et sur quels leviers
+          pouvons-nous agir pour prévenir les risques futurs ?
+        </p>
+        <a href="#introduction" class="btn btn-primary btn-xl scroll-smooth">
+          Commencer
+        </a>
+      </div>
+    </div>
+  </div>
+  <p class="text-justify lg:mt-20 my-10" id="introduction">
+    Ces dernières années, les catastrophes liées au dérèglement climatique se
+    multiplient à travers le monde. La Gironde et la métropole de Bordeaux n'y
+    échappent pas, gravement marquées par des incendies ravageurs et des crues
+    répétées de la Garonne.
+  </p>
+  <p class="text-justify">
+    Face aux dégâts subis et aux bouleversements entraînés dans le quotidien des
+    habitants, une question se pose : quels sont les facteurs déclencheurs des
+    incendies autour de Bordeaux, comment mesurer l'ampleur de leurs impacts, et
+    sur quels leviers pouvons-nous agir pour prévenir les risques futurs ?
+  </p>
+
+  <h2 class="text-xl lg:text-3xl font-bold my-10">
+    Quelles sont les causes des incendies ?
+  </h2>
+
+  <p class="text-justify mb-10">
+    Tout d'abord, il est important de comprendre les différentes causes directes
+    des incendies. Ces causes peuvent être naturelles, comme la foudre, ou
+    humaines, comme les actes de vandalisme ou les erreurs humaines.
+  </p>
+  <p class="text-justify mb-10">
+    Comme on peut le voir ci-dessous, une grande partie des incendies est due à
+    des causes humaines. Même si nous ne pouvons pas agir sur les causes
+    naturelles, il est possible de réduire le nombre d'incendies en redoublant
+    de vigilance.
+  </p>
+
+  <figure class="my-10 rounded-box bg-base-200 p-5 shadow-lg lg:p-8">
+    <h3 class="text-2xl font-bold text-primary lg:text-3xl">
+      Répartition des incendies par origine
+    </h3>
+    <p class="mt-2 text-base-content/70">
+      Nombre d'incendies recensés pour chaque cause identifiée.
+    </p>
+
+    <div class="my-4 flex items-center gap-2 text-sm text-base-content/70">
+      <span class="inline-block size-3 rounded-full bg-error"></span>
+      <span>Légende : une barre correspond à une origine d'incendie.</span>
+    </div>
+
+    <PlotFigure
+      options={{
+        marginLeft: 120,
+        x: { label: "Nombre d'incendies" },
+        y: { label: null },
+        ariaLabel:
+          "Graphique en barres montrant la répartition des incendies selon leur origine.",
+        marks: [
+          Plot.barX(causes_incendies_N, {
+            x: "count",
+            y: "nature",
+            opacity: 0.7,
+            fill: "crimson",
+            sort: { y: "-x" },
+          }),
+          Plot.text(causes_incendies_N, {
+            x: "count",
+            y: "nature",
+            text: (d) => d.count,
+            dx: 15,
+          }),
+          Plot.ruleX([0]),
+        ],
+      }}
+    />
+
+    <figcaption class="mt-4 text-sm text-base-content/70">
+      Le graphique présente les 215 origines renseignées sur 484 incendies. Les
+      269 autres incendies ne disposent pas d'une cause spécifiée.
+    </figcaption>
+    <p class="mt-2 text-xs text-base-content/60">
+      Source :
+      <a
+        href={sourceIncendies}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link link-primary font-semibold"
+      >
+        BDIFF — Base de données des incendies
+      </a>
+    </p>
+  </figure>
+  <button>
+    <a href="/incendies-bordeaux" class="btn btn-primary">
+      Explorer les incendies de Bordeaux en détail →
+    </a>
+  </button>
+
+  <h3 class="text-xl lg:text-3xl font-bold my-10">
+    Quelles sont les circonstances aggravantes des incendies ?
+  </h3>
+
+  <p class="text-justify mb-10">
+    En temps normal, les incendies sont souvent maîtrisés rapidement par les
+    soldats du feu. Cependant, le problème qui se pose de plus en plus souvent
+    est leur violence. Les incendies sont souvent aggravés par des conditions
+    météorologiques extrêmes, telles que des températures élevées qui assèchent
+    les terres, des vents forts et une faible humidité. Ces conditions peuvent
+    favoriser la propagation rapide du feu et rendre son extinction plus
+    difficile.
+  </p>
+  <p class="text-justify mb-10">
+    Et c'est bien là le problème : en 15 ans, dans toute la France, il n'y a pas
+    forcément eu beaucoup plus d'incendies. En revanche, ils ont causé beaucoup
+    plus de dégâts, comme en témoignent les hectares brûlés.
+  </p>
+
+  <figure class="my-10 rounded-box bg-base-200 p-5 shadow-lg lg:p-8">
+    <h3 class="text-2xl font-bold text-primary lg:text-3xl">
+      Des incendies plus dévastateurs
+    </h3>
+    <p class="mt-2 text-base-content/70">
+      Surface totale parcourue par le feu, en hectares, pour les incendies
+      localisés sur les cartes.
+    </p>
+
+    <div class="my-4 flex items-center gap-2 text-sm text-base-content/70">
+      <span class="inline-block size-3 rounded-full bg-error"></span>
+      <span>Légende : hectares parcourus par année.</span>
+    </div>
+
+    <div id="graphique-barres"></div>
+
+    <figcaption class="mt-4 text-sm text-base-content/70">
+      Le plus grand feu de 2010 ({r2010.plusGrand.commune}, {
+        entier.format(r2010.plusGrand.surface_ha)
+      } ha) représente {entier.format(r2010.part)} % de la surface de l'année. Celui
+      de 2025 ({r2025.plusGrand.commune}, {
+        entier.format(r2025.plusGrand.surface_ha)
+      } ha) en représente {entier.format(r2025.part)} %. La couverture des données
+      peut différer entre les deux années.
+    </figcaption>
+    <p class="mt-2 text-xs text-base-content/60">
+      Source :
+      <a
+        href={sourceIncendies}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link link-primary font-semibold"
+      >
+        BDIFF — Base de données des incendies
+      </a>
+    </p>
+  </figure>
+  <button class="mt-4">
+    <a href="/incendies-france" class="btn btn-primary">
+      Explorer les incendies de France en détail →
+    </a>
+  </button>
+  <script>
+    import * as Plot from "@observablehq/plot";
+    import incendies2010 from "../assets/Incendies-10-FR.json";
+    import incendies2025 from "../assets/Incendies-25-FR.json";
+
+    const conteneur = document.getElementById("graphique-barres");
+    if (!conteneur) {
+      throw new Error("Le conteneur du graphique est introuvable.");
+    }
+    const zone = conteneur;
+
+    const entier = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+    const decimal = new Intl.NumberFormat("fr-FR", {
+      maximumFractionDigits: 1,
+    });
+
+    const somme = (liste: { surface_ha: number }[]) =>
+      liste.reduce((total, d) => total + d.surface_ha, 0);
+
+    const donnees = [
+      { annee: "2010", ha: somme(incendies2010) },
+      { annee: "2025", ha: somme(incendies2025) },
+    ];
+    const rapport = donnees[1].ha / donnees[0].ha;
+
+    function render() {
+      const plot = Plot.plot({
+        width: Math.min(520, zone.clientWidth || 420),
+        height: 320,
+        marginTop: 30,
+        ariaLabel: `Graphique en barres : ${entier.format(donnees[0].ha)} hectares parcourus par le feu en 2010 contre ${entier.format(donnees[1].ha)} en 2025, soit ${decimal.format(rapport)} fois plus.`,
+        x: { label: null, domain: ["2010", "2025"], padding: 0.4 },
+        y: {
+          label: "Hectares parcourus",
+          grid: true,
+          nice: true,
+          tickFormat: (d: number) => entier.format(d),
+        },
+        marks: [
+          Plot.barY(donnees, {
+            x: "annee",
+            y: "ha",
+            fill: "crimson",
+            fillOpacity: 0.7,
+          }),
+          Plot.text(donnees, {
+            x: "annee",
+            y: "ha",
+            text: (d) => `${entier.format(d.ha)} ha`,
+            lineAnchor: "bottom",
+            dy: -6,
+            fontWeight: "bold",
+          }),
+          Plot.ruleY([0]),
+        ],
+      });
+      zone.replaceChildren(plot);
+    }
+
+    render();
+
+    // Redessine si la fenêtre change de taille (avec un léger délai)
+    let minuteur: number | undefined;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(minuteur);
+      minuteur = window.setTimeout(render, 200);
+    });
+  </script>
+
+  <h2 class="text-xl lg:text-3xl font-bold my-10">
+    Action et prévention : comment diminuer les risques d’incendies ?
+  </h2>
+  <h3 class="text-lg lg:text-xl font-semibold my-5">
+    Agir à la source : la prise de conscience des origines
+  </h3>
+  <p class="mb-5">
+    La première étape d'une prévention efficace réside dans la compréhension
+    exacte des causes. En mettant en lumière le fait que la grande majorité des
+    départs de feux identifiés découle d'activités humaines (imprudences,
+    travaux, négligences du quotidien), nous rappelons que le risque n'est pas
+    une fatalité.
+  </p>
+  <p class="mb-5">
+    L'action concrète commence par l'adoption de réflexes individuels et
+    collectifs adaptés :
+  </p>
+  <lu class="list-disc list-inside mb-5">
+    <li>
+      Au quotidien et au logement : Sécuriser les installations électriques
+      (éviter la surcharge des multiprises, vérifier les équipements en lisière
+      de zone naturelle) et respecter scrupuleusement les interdictions de
+      brûlage de déchets verts ou de feux de loisirs.
+    </li>
+    <li>
+      Dans la réglementation : Imposer des normes de construction adaptées à
+      l'interface entre forêt et habitations (matériaux ignifuges, règles
+      d'urbanisme strictes dans les zones exposées de l'Ouest métropolitain).
+    </li>
+  </lu>
+  <h3 class="text-lg lg:text-xl font-semibold my-5">
+    Aménager le territoire et développer la culture du risque
+  </h3>
+  <p class="mb-5">
+    Face à la concentration des incendies dans la ceinture forestière
+    (Saint-Médard-en-Jalles, Martignas-sur-Jalle, Saint-Aubin-de-Médoc),
+    l'aménagement de l'espace et la sensibilisation deviennent des leviers
+    d'action prioritaires :
+  </p>
+  <lu class="list-disc list-inside mb-5">
+    <li>
+      Entretien des lisières et débroussaillement : Aménager des bandes tampons
+      nettoyées entre les massifs boisés et les zones résidentielles pour
+      ralentir la propagation des flammes.
+    </li>
+    <li>
+      Infrastructures de crise : Établir des périmètres de sécurité, aménager
+      des accès pour les véhicules de secours et identifier des établissements
+      de repli stratégiques pour la prise en charge rapide des sinistrés.
+    </li>
+    <li>
+      Culture du risque multi-aléas : Sensibiliser les entreprises et les
+      riverains aux risques croisés. Par exemple, anticiper les effets d'une
+      vague de forte chaleur ou d'une sécheresse à proximité de zones de
+      stockages anciennes (sites CASIAS), afin d'adapter les comportements et
+      les plans de vigilance locaux.
+    </li></lu
+  >
+  <h3 class="text-lg lg:text-xl font-semibold my-5">
+    Vérifier, explorer et aller plus loin
+  </h3>
+  <p class="mb-5">
+    La datavisualisation doit être au service d'une information transparente et
+    vérifiable. L'intégralité des traitements de données, du nettoyage des
+    fichiers bruts (BDIFF, CASIAS) aux calculs des ratios territoriaux, est
+    documentée en détail dans notre page Méthode et directement consultable au
+    sein de notre notebook d'analyse Observable. Nous vous invitons à y explorer
+    les données en accès libre, à vérifier nos sources et à poursuivre la
+    réflexion sur la gestion des risques au sein de Bordeaux Métropole.
+  </p>
 </Layout>
