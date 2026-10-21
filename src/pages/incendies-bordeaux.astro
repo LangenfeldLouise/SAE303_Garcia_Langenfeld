@@ -1,0 +1,275 @@
+---
+import Layout from "../layouts/Layout.astro";
+import incendies from "../assets/incendies-B-10-25.json";
+
+const listeAnnees = [...new Set(incendies.map((d) => d.annee))].sort(
+    (a, b) => b - a,
+);
+
+// Source unique des catégories et des couleurs (relues par le script via data-couleur)
+const listeNatures = [
+    { nom: "Malveillance", couleur: "#d62828" },
+    { nom: "Accidentelle", couleur: "#f77f00" },
+    { nom: "Involontaire (particulier)", couleur: "#e6a700" },
+    { nom: "Involontaire (travaux)", couleur: "#6a4c93" },
+    { nom: "Naturelle", couleur: "#2a9d8f" },
+    { nom: "Non renseignée", couleur: "#9aa0a6" },
+];
+
+const sourceDonnees =
+    "https://bdiff.agriculture.gouv.fr/incendies?if%5BidIncendie%5D=&if%5BdateAlerteDeb%5D%5Bdate%5D=01%2F01%2F2010&if%5BdateAlerteDeb%5D%5Btime%5D%5Bhour%5D=0&if%5BdateAlerteDeb%5D%5Btime%5D%5Bminute%5D=0&if%5BdateAlerteFin%5D%5Bdate%5D=31%2F12%2F2025&if%5BdateAlerteFin%5D%5Btime%5D%5Bhour%5D=23&if%5BdateAlerteFin%5D%5Btime%5D%5Bminute%5D=59&if%5BperiodeDeb%5D%5Bjour%5D=&if%5BperiodeDeb%5D%5Bmois%5D=&if%5BperiodeFin%5D%5Bjour%5D=&if%5BperiodeFin%5D%5Bmois%5D=&if%5BperiodeAnnees%5D%5BanneeDeb%5D=&if%5BperiodeAnnees%5D%5BanneeFin%5D=&if%5BheureDeb%5D=&if%5BheureFin%5D=&if%5BsurfaceDeInc%5D=1&if%5BsurfaceDe%5D=&if%5BsurfaceA%5D=&if%5BsurfaceAInc%5D=1&if%5Bzone%5D=&if%5Bra%5D=&if%5Bdeprts%5D%5Bvalue%5D=33&if%5Bcommune%5D=&if%5Bbbox%5D%5Bvalue%5D=&if%5Bsubmit%5D=";
+---
+
+<Layout
+    title="Incendies à Bordeaux Métropole — carte interactive"
+    description="Carte des incendies de Bordeaux Métropole filtrable par année et par origine du feu"
+>
+    <main class="page mx-auto max-w-6xl text-base-content mb">
+        <div
+            class="page-intro relative overflow-hidden rounded-[1.75rem] bg-primary-content px-5 py-8 text-base-content shadow-xl sm:px-10 sm:py-12 lg:px-14 lg:py-16 mb-10"
+        >
+            <h1
+                class="relative z-10 m-0 max-w-3xl text-4xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary sm:text-5xl lg:text-6xl"
+            >
+                Les incendies à Bordeaux Métropole
+            </h1>
+            <p
+                id="incendies-description"
+                class="relative z-10 m-0 mt-5 max-w-2xl text-base-content/75 sm:text-lg"
+            >
+                Filtres : année et origine du feu (2010 – 2025).
+            </p>
+        </div>
+
+        <div
+            class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(250px,320px)_minmax(0,1fr)]"
+        >
+            <div
+                class="controls grid grid-cols-1 items-start gap-6 rounded-2xl border border-base-300 bg-base-100 p-5 shadow-lg lg:mt-60"
+                aria-label="Filtres des incendies"
+            >
+                <div>
+                    <label
+                        for="annee"
+                        class="mb-2 block text-xs font-extrabold uppercase tracking-normal text-primary"
+                        >Année</label
+                    >
+                    <select
+                        id="annee"
+                        class="select select-bordered select-primary min-h-11 w-full rounded-xl bg-base-200 px-3 py-2.5 font-bold text-base-content outline-none transition focus:ring-4 focus:ring-primary/15"
+                    >
+                        <option selected>Toutes</option>
+                        {listeAnnees.map((a) => <option>{a}</option>)}
+                    </select>
+                </div>
+
+                <fieldset
+                    class="natures flex flex-row flex-wrap items-center justify-start gap-2"
+                >
+                    <legend
+                        class="mb-1 basis-full text-xs font-extrabold uppercase tracking-normal text-primary"
+                        >Origine du feu</legend
+                    >
+                    {
+                        listeNatures.map((n) => (
+                            <label class="nature inline-flex flex-none cursor-pointer items-center gap-2 rounded-full border border-base-300 bg-base-200 px-3 py-2 text-sm text-base-content/70 transition hover:-translate-y-px hover:border-secondary hover:bg-base-300 has-checked:border-secondary has-checked:bg-secondary/10 has-checked:font-bold has-checked:text-secondary has-checked:shadow-md">
+                                <input
+                                    type="checkbox"
+                                    name="nature"
+                                    value={n.nom}
+                                    data-couleur={n.couleur}
+                                    checked
+                                    class="checkbox checkbox-primary checkbox-xs"
+                                />
+                                <span
+                                    class="pastille inline-block size-3 rounded-full ring-2 ring-white/70"
+                                    style={`background:${n.couleur}`}
+                                />
+                                {n.nom}
+                            </label>
+                        ))
+                    }
+                </fieldset>
+
+                <label
+                    class="decalage inline-flex cursor-pointer items-center gap-2 pt-1 text-sm text-base-content/60"
+                >
+                    <input
+                        type="checkbox"
+                        id="decaler"
+                        checked
+                        class="checkbox checkbox-primary checkbox-sm"
+                    />
+                    Décaler légèrement les points pour les distinguer
+                </label>
+            </div>
+
+            <div
+                class="visualization-panel incendies-panel min-w-0 overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-xl"
+            >
+                <div
+                    class="panel-label flex justify-between gap-4 border-b border-primary bg-primary px-5 py-4 text-xs font-extrabold tracking-[0.12em] text-primary-content max-sm:flex-col max-sm:gap-1"
+                >
+                    <span>CARTE DE POINTS</span><span>28 communes</span>
+                </div>
+                <p
+                    id="incendies-status"
+                    class="population-status m-0 border-b border-base-200 bg-base-200 px-5 py-3 text-sm font-semibold text-base-content/70"
+                    aria-live="polite"
+                >
+                </p>
+                <div
+                    id="incendies-map"
+                    class="min-h-100 overflow-x-auto p-3 max-sm:p-1"
+                    aria-live="polite"
+                >
+                </div>
+                <p
+                    class="border-t border-base-300 px-5 py-3 text-xs text-base-content/60"
+                >
+                    Source des données :
+                    <a
+                        href={sourceDonnees}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="link link-primary font-semibold"
+                    >
+                        BDIFF — Base de données des incendies
+                    </a>
+                </p>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import incendies from "../assets/incendies-B-10-25.json";
+    import communes from "../assets/communes-bordeaux.geojson.json";
+
+    const anneeSelect = document.querySelector<HTMLSelectElement>("#annee");
+    const decalerInput = document.querySelector<HTMLInputElement>("#decaler");
+    const natureInputs = [
+        ...document.querySelectorAll<HTMLInputElement>('input[name="nature"]'),
+    ];
+    const mapElement = document.getElementById("incendies-map");
+    const statusElement = document.getElementById("incendies-status");
+
+    if (
+        !anneeSelect ||
+        !decalerInput ||
+        !mapElement ||
+        natureInputs.length === 0
+    ) {
+        throw new Error("Les contrôles des incendies sont introuvables.");
+    }
+
+    const anneeControl = anneeSelect;
+    const decalerControl = decalerInput;
+    const mapContainer = mapElement;
+
+    // Catégories et couleurs relues depuis le HTML (une seule source de vérité)
+    const ordreNatures = natureInputs.map((i) => i.value);
+    const couleursNatures = natureInputs.map(
+        (i) => i.dataset.couleur ?? "#999",
+    );
+
+    // Les contours du fichier sont dans le sens antihoraire (standard GeoJSON),
+    // d3 attend le sens horaire : on inverse chaque anneau, sinon la carte se
+    // cadre sur le globe entier.
+    const inverse = (anneau: any) => anneau.slice().reverse();
+    const bordeaux: any = {
+        ...(communes as any),
+        features: (communes as any).features.map((f: any) => ({
+            ...f,
+            geometry: {
+                ...f.geometry,
+                coordinates:
+                    f.geometry.type === "Polygon"
+                        ? f.geometry.coordinates.map(inverse)
+                        : f.geometry.coordinates.map((poly: any) =>
+                              poly.map(inverse),
+                          ),
+            },
+        })),
+    };
+
+    // Les dates sont exportées en texte ISO : on les reconvertit
+    const feux = incendies.map((d) => ({ ...d, date: new Date(d.date) }));
+
+    // Échelle de taille fixe : les cercles restent comparables d'une sélection à l'autre
+    const echelleR = { domain: [0, 110], range: [2, 16], clamp: true };
+
+    const fr = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
+
+    function render() {
+        const annee = anneeControl.value;
+        const naturesChoisies = natureInputs
+            .filter((i) => i.checked)
+            .map((i) => i.value);
+        const decaler = decalerControl.checked;
+
+        const filtres = feux.filter(
+            (d) =>
+                (annee === "Toutes" || d.annee === Number(annee)) &&
+                naturesChoisies.includes(d.nature),
+        );
+        const nombre = filtres.length;
+        const hectares = filtres.reduce((somme, d) => somme + d.surface_ha, 0);
+        const periode = annee === "Toutes" ? "2010 – 2025" : annee;
+
+        const resume = naturesChoisies.length
+            ? `${nombre} incendie${nombre > 1 ? "s" : ""} · ${fr.format(hectares)} ha parcourus (${periode}).`
+            : "Aucune origine sélectionnée : cochez au moins une catégorie.";
+        if (statusElement) statusElement.textContent = resume;
+
+        const plot = Plot.plot({
+            width: Math.min(900, mapContainer.clientWidth || 900),
+            height: 800,
+            title: `Incendies — ${periode}`,
+            subtitle: "Bordeaux Métropole, selon l'origine du feu",
+            ariaLabel: `Carte des 28 communes de Bordeaux Métropole montrant ${nombre} incendie${nombre > 1 ? "s" : ""} (${periode}). Chaque incendie est un point dont la couleur indique l'origine du feu et la taille la surface parcourue.`,
+            caption:
+                "Taille des cercles : surface parcourue (de moins de 1 ha à plus de 100 ha). Les points sont placés au niveau de la commune, pas à l'emplacement exact du feu. ",
+
+            projection: { type: "mercator", domain: bordeaux },
+            r: echelleR,
+            color: { domain: ordreNatures, range: couleursNatures },
+            marks: [
+                Plot.geo(bordeaux, {
+                    fill: "#f3f3f3",
+                    stroke: "#999",
+                    strokeWidth: 0.8,
+                }),
+                Plot.text(
+                    bordeaux.features,
+                    Plot.centroid({
+                        text: (d: any) => d.properties.nom,
+                        fontSize: 9,
+                        fill: "#888",
+                    }),
+                ),
+                Plot.dot(filtres, {
+                    x: (d) => (decaler ? d.lon : d.lon0),
+                    y: (d) => (decaler ? d.lat : d.lat0),
+                    r: "surface_ha",
+                    fill: "nature",
+                    stroke: "nature",
+                    fillOpacity: 0.45,
+                    strokeWidth: 0.8,
+                    sort: { channel: "-r" },
+                    tip: true,
+                    title: (d) =>
+                        `${d.commune}\n${d.date.toLocaleDateString("fr-FR")}\n${d.nature}\n${fr.format(d.surface_ha)} ha`,
+                }),
+                Plot.frame(),
+            ],
+        });
+        mapContainer.replaceChildren(plot);
+    }
+
+    [anneeControl, decalerControl, ...natureInputs].forEach((element) =>
+        element.addEventListener("change", render),
+    );
+    render();
+</script>

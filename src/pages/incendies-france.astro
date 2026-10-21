@@ -1,0 +1,302 @@
+---
+import Layout from "../layouts/Layout.astro";
+import incendies2010 from "../assets/Incendies-10-FR.json";
+import incendies2025 from "../assets/Incendies-25-FR.json";
+
+const fr = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+const somme = (liste: { surface_ha: number }[]) =>
+    liste.reduce((total, d) => total + d.surface_ha, 0);
+
+const stats2010 = `${fr.format(incendies2010.length)} incendies · ${fr.format(somme(incendies2010))} ha parcourus`;
+const stats2025 = `${fr.format(incendies2025.length)} incendies · ${fr.format(somme(incendies2025))} ha parcourus`;
+---
+
+<Layout
+    title="Incendies en France — comparaison 2010 / 2025"
+    description="Comparaison cartographique des incendies de forêt en France en 2010 et en 2025"
+>
+    <main class="page mx-auto max-w-7xl text-base-content">
+        <div
+            class="page-intro rounded-[1.75rem] bg-primary-content px-5 py-8 text-base-content shadow-xl sm:px-10 sm:py-12 lg:px-14 lg:py-16"
+        >
+            <h1
+                class="max-w-4xl text-4xl font-extrabold leading-tight tracking-tight text-primary sm:text-5xl lg:text-6xl"
+            >
+                Les incendies en France : 2010 et 2025
+            </h1>
+            <p class="mt-5 max-w-3xl text-lg text-base-content/75 lg:text-xl">
+                Deux cartes à la même échelle : un point par incendie, dont la
+                taille indique la surface parcourue par le feu.
+            </p>
+        </div>
+
+        <div
+            class="visualization-panel comparaison-panel mt-8 overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-xl"
+        >
+            <div
+                class="panel-label flex flex-wrap justify-between gap-3 bg-primary px-5 py-4 text-xs font-extrabold tracking-[0.12em] text-primary-content sm:px-8"
+            >
+                <span>CARTES DE POINTS</span><span>2010 · 2025</span>
+            </div>
+
+            <div
+                class="legende border-b border-base-300 bg-base-200 px-5 py-5 sm:px-8"
+            >
+                <p class="legende-titre text-sm font-bold text-primary">
+                    Surface parcourue par le feu
+                </p>
+                <div
+                    id="legende-taille"
+                    class="my-2 max-w-full overflow-x-auto"
+                    role="img"
+                    aria-label="Légende : quatre cercles de taille croissante pour 10, 100, 1 000 et 10 000 hectares"
+                >
+                </div>
+                <p
+                    class="note mt-2 max-w-3xl text-xs leading-relaxed text-base-content/60"
+                >
+                    La taille des cercles est indicative : elle ne correspond
+                    pas à l'emprise réelle du feu sur la carte. Les points sont
+                    placés au centre de la commune touchée.
+                </p>
+            </div>
+
+            <div class="cartes grid gap-6 p-5 sm:p-8 xl:grid-cols-2">
+                <section
+                    class="carte card border border-base-300 bg-base-100 shadow-md"
+                    aria-labelledby="titre-2010"
+                >
+                    <div class="card-body gap-2 p-4 sm:p-6">
+                        <div
+                            class="flex flex-wrap items-baseline justify-between gap-2"
+                        >
+                            <h2 id="titre-2010" class="card-title text-primary">
+                                1 · Année 2010
+                            </h2>
+                            <p
+                                class="stats text-sm font-semibold text-base-content/60"
+                            >
+                                {stats2010}
+                            </p>
+                        </div>
+                        <p class="sous-titre text-base text-base-content/75">
+                            Où les incendies ont-ils eu lieu ?
+                        </p>
+                        <div id="carte-2010" class="w-full overflow-x-auto">
+                        </div>
+                        <details
+                            class="collapse collapse-arrow mt-2 border border-base-300 bg-base-200"
+                        >
+                            <summary
+                                class="collapse-title min-h-0 py-3 text-sm font-semibold"
+                            >
+                                Description détaillée de la carte 2010
+                            </summary>
+                            <p
+                                class="collapse-content text-sm leading-relaxed text-base-content/75"
+                            >
+                                En 2010, environ 2 400 incendies sont localisés
+                                sur la carte, pour environ 8 300 hectares
+                                parcourus. Ils se concentrent en Gironde et dans
+                                les Landes, dans l'arc méditerranéen (Hérault,
+                                Aude, Bouches-du-Rhône, Var) et en Corse. Le
+                                nord de la France compte très peu de points. Les
+                                départements les plus touchés en nombre sont la
+                                Gironde (352), la Corse-du-Sud (275), l'Hérault
+                                (159) et les Landes (144). Le plus grand feu est
+                                celui de Fontanès, dans l'Hérault, avec 2 544
+                                hectares le 30 août. Les données des
+                                Pyrénées-Atlantiques sont absentes (incident
+                                technique).
+                            </p>
+                        </details>
+                    </div>
+                </section>
+
+                <section
+                    class="carte card border border-base-300 bg-base-100 shadow-md"
+                    aria-labelledby="titre-2025"
+                >
+                    <div class="card-body gap-2 p-4 sm:p-6">
+                        <div
+                            class="flex flex-wrap items-baseline justify-between gap-2"
+                        >
+                            <h2 id="titre-2025" class="card-title text-primary">
+                                2 · Année 2025
+                            </h2>
+                            <p
+                                class="stats text-sm font-semibold text-base-content/60"
+                            >
+                                {stats2025}
+                            </p>
+                        </div>
+                        <p class="sous-titre text-base text-base-content/75">
+                            Où les incendies ont-ils eu lieu ?
+                        </p>
+                        <div id="carte-2025" class="w-full overflow-x-auto">
+                        </div>
+                        <details
+                            class="collapse collapse-arrow mt-2 border border-base-300 bg-base-200"
+                        >
+                            <summary
+                                class="collapse-title min-h-0 py-3 text-sm font-semibold"
+                            >
+                                Description détaillée de la carte 2025
+                            </summary>
+                            <p
+                                class="collapse-content text-sm leading-relaxed text-base-content/75"
+                            >
+                                En 2025, environ 2 500 incendies sont localisés
+                                sur la carte, pour près de 22 000 hectares
+                                parcourus. Ils concernent 88 départements, y
+                                compris le nord-ouest et le centre, mais sont
+                                plus nombreux sur le pourtour méditerranéen, en
+                                Corse et dans le sud-ouest. Les départements les
+                                plus touchés en nombre sont les Bouches-du-Rhône
+                                (264), le Var (175), l'Hérault (162), l'Aude
+                                (140) et la Gironde (129). Un seul feu domine :
+                                celui de Ribaute, dans l'Aude, avec 11 133
+                                hectares le 5 août, soit environ la moitié des
+                                surfaces brûlées de l'année. Environ la moitié
+                                des incendies ont eu lieu en juillet et août.
+                            </p>
+                        </details>
+                    </div>
+                </section>
+            </div>
+
+            <p
+                class="note border-t border-base-300 bg-base-200 px-5 py-4 text-sm leading-relaxed text-base-content/70 sm:px-8"
+            >
+                Comparaison : 2 399 incendies en 2010 contre 2 512 en 2025, mais
+                une surface parcourue 2,6 fois plus grande en 2025, surtout à
+                cause d'un feu exceptionnel dans l'Aude. La couverture des
+                données peut différer entre les deux années.
+            </p>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import departements from "../assets/departements.geojson.json";
+    import incendies2010 from "../assets/Incendies-10-FR.json";
+    import incendies2025 from "../assets/Incendies-25-FR.json";
+
+    const conteneur2010 = document.getElementById("carte-2010");
+    const conteneur2025 = document.getElementById("carte-2025");
+    const conteneurLegende = document.getElementById("legende-taille");
+
+    if (!conteneur2010 || !conteneur2025 || !conteneurLegende) {
+        throw new Error("Les conteneurs des cartes sont introuvables.");
+    }
+
+    // Les dates sont exportées en texte ISO : on les reconvertit
+    const prepare = (liste: typeof incendies2010) =>
+        liste.map((d) => ({ ...d, date: new Date(d.date) }));
+    const feux2010 = prepare(incendies2010);
+    const feux2025 = prepare(incendies2025);
+
+    // Échelle de taille commune aux deux cartes et à la légende.
+    // Rayons volontairement petits : un cercle en pixels ne représente pas
+    // l'emprise réelle d'un feu (1 px ≈ 2 km à cette échelle).
+    const echelleR = { domain: [0, 11200], range: [1, 8], clamp: true };
+
+    const fr = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
+
+    function carte(
+        conteneur: HTMLElement,
+        donnees: typeof feux2010,
+        ariaLabel: string,
+    ) {
+        const taille = Math.min(560, conteneur.clientWidth || 440);
+        const plot = Plot.plot({
+            width: taille,
+            height: taille,
+            margin: 0,
+            ariaLabel,
+            projection: {
+                type: "conic-conformal",
+                rotate: [-3, -46.5],
+                parallels: [44, 49],
+                domain: departements as any,
+            },
+            r: echelleR,
+            marks: [
+                Plot.geo(departements as any, {
+                    fill: "#f3f3f3",
+                    stroke: "#ccc",
+                    strokeWidth: 0.5,
+                }),
+                Plot.dot(donnees, {
+                    x: "lon",
+                    y: "lat",
+                    r: "surface_ha",
+                    sort: { channel: "-r" }, // gros cercles dessous, petits dessus
+                    fill: "crimson",
+                    fillOpacity: 0.35,
+                    stroke: "crimson",
+                    strokeWidth: 0.5,
+                    tip: true,
+                    title: (d) =>
+                        `${d.commune} (${d.departement})\n${d.date.toLocaleDateString("fr-FR")}\n${fr.format(d.surface_ha)} ha`,
+                }),
+            ],
+        });
+        conteneur.replaceChildren(plot);
+    }
+
+    function legende() {
+        const valeurs = [10, 100, 1000, 10000];
+        const nombre = new Intl.NumberFormat("fr-FR");
+        const plot = Plot.plot({
+            width: 420,
+            height: 60,
+            margin: 10,
+
+            x: { axis: null, domain: [-0.5, valeurs.length - 0.5] },
+            y: { axis: null, domain: [0, 1] },
+            r: echelleR,
+            marks: [
+                Plot.dot(valeurs, {
+                    x: (_, i) => i,
+                    y: 0.65,
+                    r: (d) => d,
+                    fill: "crimson",
+                    fillOpacity: 0.35,
+                    stroke: "crimson",
+                }),
+                Plot.text(valeurs, {
+                    x: (_, i) => i,
+                    y: 0.05,
+                    text: (d) => `${nombre.format(d)} ha`,
+                    fontSize: 11,
+                }),
+            ],
+        });
+        conteneurLegende!.replaceChildren(plot);
+    }
+
+    function render() {
+        legende();
+        carte(
+            conteneur2010!,
+            feux2010,
+            "Carte de la France avec environ 2 400 incendies de 2010, concentrés dans le sud-ouest, sur le pourtour méditerranéen et en Corse. Le nord est presque épargné.",
+        );
+        carte(
+            conteneur2025!,
+            feux2025,
+            "Carte de la France avec environ 2 500 incendies de 2025, répartis sur presque tout le territoire, plus denses dans le sud. Un feu de 11 133 hectares apparaît dans l'Aude.",
+        );
+    }
+
+    render();
+
+    // Redessine si la fenêtre change de taille (avec un léger délai)
+    let minuteur: number | undefined;
+    window.addEventListener("resize", () => {
+        window.clearTimeout(minuteur);
+        minuteur = window.setTimeout(render, 200);
+    });
+</script>

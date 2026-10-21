@@ -4,4 +4,8 @@
     themes: autumn --default;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 ;

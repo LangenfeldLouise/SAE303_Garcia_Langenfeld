@@ -12,7 +12,9 @@ import "../styles/global.css";
     <title>Bordeaux Métropole</title>
   </head>
   <body>
-    <div class="navbar bg-primary text-primary-content shadow-sm">
+    <div
+      class="navbar bg-primary text-primary-content shadow-sm fixed top-0 z-50"
+    >
       <div class="navbar-start">
         <div class="dropdown">
           <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -35,26 +37,22 @@ import "../styles/global.css";
             tabindex="-1"
             class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
-            <li><a>Item 1</a></li>
-            <li>
-              <a>Parent</a>
-              <ul class="p-2">
-                <li><a>Submenu 1</a></li>
-                <li><a>Submenu 2</a></li>
-              </ul>
-            </li>
-            <li><a>Item 3</a></li>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/incendies-bordeaux">Incendies Bordeaux</a></li>
+            <li><a href="/incendies-france">Incendies France</a></li>
           </ul>
         </div>
-        <a class="btn btn-ghost text-xl text-primary-content">SAE 303</a>
+        <a class="btn btn-ghost text-xl text-primary-content" href="/"
+          >SAE 303</a
+        >
       </div>
       <div class="navbar-center hidden lg:flex">
         <ul class="menu menu-horizontal px-1">
-          <li><a>Item 1</a></li>
+          <li><a href="/">Accueil</a></li>
           <li>
-            <a>Page 2</a>
+            <a href="/incendies-bordeaux">Incendies Bordeaux</a>
           </li>
-          <li><a>Item 3</a></li>
+          <li><a href="/incendies-france">Incendies France</a></li>
         </ul>
       </div>
       <div class="navbar-end">
